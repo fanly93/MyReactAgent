@@ -31,7 +31,24 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify compliance with `.specify/memory/constitution.md` before proceeding:
+
+- [ ] **I. Readability** — Is the planned code readable for the target phase? No premature abstractions for Phase 1–2.
+- [ ] **II. Dependencies** — Are all new dependencies justified? No convenience-only additions.
+- [ ] **III. Explicit** — Are all registrations, configs, and errors explicit? No magic or silent failures.
+- [ ] **IV. Layer Boundaries** — Does the design respect `utils → tools → llm/memory → agent → orchestrator → server`? No upward imports.
+- [ ] **V. Phase Gate** — Does this work belong to the declared phase? Is the previous phase gate confirmed complete?
+- [ ] **VI. Observability** — Are lifecycle events emitted via `_emit()` + `BaseCallbackHandler`? No scattered `print()` calls.
+- [ ] **VII. Event Format** — Do all runtime events conform to the unified JSON envelope (`event`, `data`, `timestamp`, `session_id`)?
+- [ ] **VIII. Async Rules** — Is sync used in Phase 1? Is async used correctly (no blocking event loop) from Phase 2 onward?
+- [ ] **IX. Retry/Fallback** — Are all LLM calls and tool calls wrapped with retry + graceful error handling?
+- [ ] **X. Tests** — Does every new core module have a corresponding test file planned?
+- [ ] **XI. HITL** — Are destructive tools declared with `is_destructive=True`? Is pause/resume state considered?
+- [ ] **XII. Session Isolation** — Is there any global mutable state introduced? (Must be zero.)
+- [ ] **XIII. Context Management** — Is `ConversationMemory` configured with a windowing or summarization strategy?
+- [ ] **XIV. Validation** — Are tool args and agent outputs validated via Pydantic at module boundaries?
+- [ ] **XV. Security** — Are tool results injected as `role: "tool"` messages? Are tool permissions declared?
+- [ ] **XVI. Ecosystem** — Are tool loaders designed as plugins? Is MCP integration considered for Phase 4?
 
 ## Project Structure
 
