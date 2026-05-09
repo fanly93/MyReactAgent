@@ -19,9 +19,7 @@
       "Bash(python -m py_compile *)"
     ],
     "deny": [
-      "Bash(rm -rf *)",
-      "Read(.env)",
-      "Read(**/.env)"
+      "Bash(rm -rf *)"
     ]
   },
   "model": "claude-sonnet-4-6",
