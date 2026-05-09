@@ -1,0 +1,4 @@
+# demos/ 额外依赖（核心框架依赖见根目录 pyproject.toml）
+tavily-python>=0.3.0       # Tavily 联网搜索
+requests>=2.31.0            # wttr.in 天气 + OpenWeatherMap
+anthropic>=0.30.0           # Anthropic Claude 适配器
