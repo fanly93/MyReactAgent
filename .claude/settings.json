@@ -20,8 +20,6 @@
     ],
     "deny": [
       "Bash(rm -rf *)",
-      "Bash(git reset --hard *)",
-      "Bash(pip uninstall *)",
       "Read(.env)",
       "Read(**/.env)"
     ]
