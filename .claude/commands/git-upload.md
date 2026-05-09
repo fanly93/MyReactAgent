@@ -11,6 +11,11 @@
 - `/git-upload` — 自动分析改动内容，生成中文提交信息
 - `/git-upload 修复工具调用解析逻辑` — 直接使用该文本作为提交信息
 
+## 重要规则（违反会导致分支分叉）
+
+- **PR 合并后，功能分支立即冻结**：不再向该分支 push 任何新 commit，否则会产生与 main 的分叉。
+- **新阶段必须从 main 切出新分支**：PR 合并完成后，下一阶段在新分支（如 `002-phase2-xxx`）上开发，不在旧分支继续。
+
 ## 执行步骤
 
 ### 1. 检查工作区状态
@@ -71,20 +76,50 @@ git status
 git push origin HEAD
 ```
 
-### 6. 询问是否打版本 Tag
+### 6. 询问是否为阶段完成（创建 PR + 打 Tag）
 
-从当前分支名提取阶段编号（例如 `001-phase1-mvp-prototype` → `phase1`），询问用户：
+询问用户：
 
-> 是否需要为本次提交打版本 Tag？（建议 Tag 名：`phase{N}-complete`）[y/N]
+> 本次是否为阶段完成？如果是，将创建 PR 合并到 main，并在 main 上打版本 Tag。[y/N]
 
-- 用户选择 **y**：打 Tag 并推送
-  ```bash
-  git tag -a phase{N}-complete -m "<提交信息主题> — $(date '+%Y-%m-%d')"
-  git push origin phase{N}-complete
-  ```
-- 用户选择 **N** 或直接回车：跳过
+**用户选择 N 或直接回车**：跳过，流程结束。
 
-如果 Tag 已存在，告知用户并跳过，不强制覆盖。
+**用户选择 y**：执行完整阶段完成流程：
+
+从当前分支名提取阶段编号（例如 `001-phase1-mvp-prototype` → `phase1`），建议 Tag 名为 `phase{N}-complete`。
+
+1. 创建 PR（功能分支 → main）：
+   ```bash
+   gh pr create --base main --head <当前分支> --title "<提交信息主题>" --body "..."
+   ```
+
+2. 合并 PR：
+   ```bash
+   gh pr merge <PR编号> --merge --delete-branch=false
+   ```
+
+3. 切换到 main 并拉取最新代码：
+   ```bash
+   git checkout main && git pull origin main
+   ```
+
+4. 打 Tag 并推送（**Tag 必须打在 main 上**）：
+   ```bash
+   git tag -a phase{N}-complete -m "<提交信息主题> — $(date '+%Y-%m-%d')"
+   git push origin main
+   git push origin phase{N}-complete
+   ```
+   如果 Tag 已存在，告知用户并跳过，不强制覆盖。
+
+5. 切回原功能分支（**此分支从此冻结，不再 push 新 commit**）：
+   ```bash
+   git checkout <原功能分支>
+   ```
+
+6. 告知用户：下一阶段开发请从 main 切出新分支：
+   ```bash
+   git checkout main && git checkout -b 00X-phaseX-<功能名>
+   ```
 
 ### 7. 输出完成摘要
 
